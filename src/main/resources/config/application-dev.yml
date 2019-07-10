@@ -1,0 +1,75 @@
+server:
+  port: 8081
+
+spring:
+  aop:
+    proxy-target-class: true
+  datasource:
+#    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/deviceDB?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+#    username: root
+#    password: 123456
+    druid:
+      driver-class-name: oracle.jdbc.driver.OracleDriver
+      url: jdbc:oracle:thin:@127.0.0.1:1521:deviceDB
+      username: deviceDB
+      password: deviceDB123
+      initial-size: 5 # 初始化时建立物理连接的个数
+      min-idle: 5 #最小连接池数量
+      max-active: 20 #最大连接池数量 maxIdle已经不再使用
+      max-wait: 60000 #获取连接时最大等待时间，单位毫秒
+      test-while-idle: true #申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。
+      time-between-eviction-runs-millis: 60000 #既作为检测的间隔时间又作为testWhileIdel执行的依据
+      min-evictable-idle-time-millis: 30000 #销毁线程时检测当前连接的最后活动时间和当前时间差大于该值时，关闭当前连接
+      #用来检测连接是否有效的sql 必须是一个查询语句
+      #mysql中为 select 'x'
+      #oracle中为 select 1 from dual
+      validation-query: select 1 from dual
+      test-on-borrow: false #申请连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+      test-on-return: false #归还连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+      pool-prepared-statements: true #是否缓存preparedStatement,mysql5.5+建议开启
+      max-pool-prepared-statement-per-connection-size: 20 #当值大于0时poolPreparedStatements会自动修改为true
+#      filter:stat,wall  #配置扩展插件
+      #通过connectProperties属性来打开mergeSql功能；慢SQL记录
+#      connect-properties:druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+      use-global-data-source-stat: true #合并多个DruidDataSource的监控数据
+      #设置访问druid监控页的账号和密码,默认没有
+      stat-view-servlet:
+        login-username: admin
+        login-password: admin
+
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+
+mybatis-plus:
+  mapper-location: classpath:mapper/**/*.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.yunda.*
+  global-config:
+    db-config:
+      #刷新mapper 调试神器
+      #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+      id-type: 3
+      #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+      field-strategy: not_empty
+      #驼峰下划线转换
+      column-underline: true
+      #数据库大写下划线转换
+      #capital-mode: true
+      #逻辑删除配置
+      logic-delete-value: 0
+      logic-not-delete-value: 1
+      db-type: mysql
+      #自定义填充策略接口实现
+      #meta-object-handler: com.baomidou.springboot.xxx
+      #自定义SQL注入器
+      #sql-injector: com.baomidou.springboot.xxx
+    configuration:
+      map-underscore-to-camel-case: true
+      cache-enabled: false
+    ##logging
+    logging:
+      level: debug
+
